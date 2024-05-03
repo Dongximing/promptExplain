@@ -20,8 +20,8 @@ def perturbation(model,tokenizer,prompt,real_output):
         tokenizer,
         skip_tokens=[1],  # skip the special token for the start of the text <s>
     )
-    logging.info(f"real output ===========>{real_output}")
-    attr_res = llm_attr.attribute(inp, target=real_output)
+    logging.info(f"real output ===========>{real_output[0]}")
+    attr_res = llm_attr.attribute(inp, target=real_output[0])
     attr_value = attr_res.token_attr.cpu().detach().numpy()
     real_attr_value = np.absolute(attr_value)
     input_tokens = attr_res.input_tokens
