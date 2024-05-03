@@ -394,7 +394,7 @@ class LanguageModelExplation(object):
         one_hot_tensor = self.to(_one_hot_batched(input_ids, vocab_size))
         token_ids_tensor_one_hot = one_hot_tensor.clone().requires_grad_(True)
 
-        inputs_embeds = torch.matmul(token_ids_tensor_one_hot.half() , embedding_matrix.half())
+        inputs_embeds = torch.matmul(token_ids_tensor_one_hot, embedding_matrix)
         return inputs_embeds, token_ids_tensor_one_hot
 
     def _attach_hooks(self, model):
