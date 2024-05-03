@@ -94,6 +94,8 @@ def infer(prompt, model, tokenizer, component_sentences, logging_ind=None):
 
         perturbation_level = perturbation(model,tokenizer,prompt,real_output)
 
+        logging.info(f"perturbation_level is {perturbation_level}")
+
 
 
 
