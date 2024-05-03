@@ -97,7 +97,7 @@ def compute_primary_attributions_scores(attr_method: str, model: transformers.Pr
             f"Please choose one of the methods: {list(ATTR_NAME_TO_CLASS.keys())}"
         )
     ig = attr_method_class(forward_func=forward_func)
-    attributions = ig.attribute(inputs, target=prediction_id, n_steps=10)
+    attributions = ig.attribute(inputs, target=prediction_id, n_steps=1)
 
     if decoder_ is not None:
         return normalize_attributes(torch.cat(attributions, dim=1))
