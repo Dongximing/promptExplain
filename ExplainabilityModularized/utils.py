@@ -22,7 +22,7 @@ def setup_logging_results(current_range):
 
     # making results dir
     current_range = str(current_range)
-    results_path = f"{os.environ.get("RESULTS_PATH")}{current_time}_{current_range}/"
+    results_path = f"{os.environ.get('RESULTS_PATH')}{current_time}_{current_range}/"
     if not os.path.exists(results_path):
         os.mkdir(results_path)
 
@@ -56,12 +56,12 @@ def setup_bmc5_env():
     # os.environ['dataset'] = load_dataset('parquet', data_files={'train': dataset_file_path}, split='train')
 
     # nltk load
-    nltk.data.path.append('/home/s4user/PromptExplainabilityProject/nltk_data')
-    nltk.data.path.append('/home/s4user/PromptExplainabilityProject/nltk_data/corpora')
-    nltk.data.path.append('/home/s4user/PromptExplainabilityProject/nltk_data/tokenizers')
+    nltk.data.path.append('/mnt/hdd-data/shaowei/Ximing2/promptExplain/nltk_data')
+    nltk.data.path.append('/mnt/hdd-data/shaowei/Ximing2/promptExplain/nltk_data/corpora')
+    nltk.data.path.append('/mnt/hdd-data/shaowei/Ximing2/promptExplain/nltk_data/tokenizers')
 
     # results path
-    os.environ["RESULTS_PATH"] = "/home/s4user/PromptExplainabilityProject/ExplainabilityModularized/Results/"
+    os.environ["RESULTS_PATH"] = "/mnt/hdd-data/shaowei/Ximing2/promptExplain/ExplainabilityModularized/Results/"
 
     return True
 
