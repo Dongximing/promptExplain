@@ -4,7 +4,7 @@ import transformers
 from torch import bfloat16
 from transformers import LlamaTokenizer, LlamaForCausalLM, AutoModelForCausalLM,AutoTokenizer
 import re
-def setup_model_tokenizer(is_quantized=True, model_name=None):
+def setup_model_tokenizer(is_quantized=False, model_name=None):
     if model_name is None:
         model_name = os.environ.get("MODEL_NAME")
     
@@ -18,10 +18,10 @@ def setup_model_tokenizer(is_quantized=True, model_name=None):
                 bnb_4bit_compute_dtype=bfloat16
             )
             model = LlamaForCausalLM.from_pretrained(model_name, output_hidden_states=True,
-                                                     device_map=os.environ.get('CUDA_CORE'),torch_dtype = torch.float16)
+                                                    quantization_config=bnb_config, device_map=os.environ.get('CUDA_CORE'))
 
         else:
-            model = LlamaForCausalLM.from_pretrained(model_name, output_hidden_states=True,
+            model = LlamaForCausalLM.from_pretrained(model_name, output_hidden_states=True,torch_dtype = torch.float16,
                                                     device_map="auto")
 
         tokenizer = LlamaTokenizer.from_pretrained(model_name, add_special_tokens=False,
