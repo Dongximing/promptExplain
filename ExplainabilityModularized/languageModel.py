@@ -35,7 +35,7 @@ class LanguageModelExplation(object):
         self.model = model
 
         # TODO: @Aadi: we are using other cores, e.g., BMC5, should this be hardcoded like this?
-        self.device = 'cuda:1' if torch.cuda.is_available() \
+        self.device = 'cuda' if torch.cuda.is_available() \
                                   and self.model.device.type == 'cuda' \
             else 'cpu'
         self.tokenizer = tokenizer
