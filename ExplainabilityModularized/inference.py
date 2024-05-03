@@ -5,6 +5,37 @@ import traceback
 import pandas as pd
 import torch
 from languageModel import LanguageModelExplation
+import numpy as np
+
+from captum.attr import (
+    FeatureAblation,
+    ShapleyValues,
+    LayerIntegratedGradients,
+    LLMAttribution,
+    LLMGradientAttribution,
+    TextTokenInput,
+    TextTemplateInput,
+    ProductBaselines,
+)
+def perturbation(model,tokenizer,prompt,real_output):
+    fa = FeatureAblation(model)
+    llm_attr = LLMAttribution(fa, tokenizer)
+    inp = TextTokenInput(
+        prompt,
+        tokenizer,
+        skip_tokens=[1],  # skip the special token for the start of the text <s>
+    )
+    attr_res = llm_attr.attribute(inp, target=real_output)
+    attr_value = attr_res.token_attr.cpu().detach().numpy()
+    real_attr_value = np.absolute(attr_value)
+    input_tokens = attr_res.input_tokens
+    real_attr_value_per_token = np.sum(real_attr_value, axis=0)
+
+
+
+
+
+
 
 
 def infer(prompt, model, tokenizer, component_sentences, logging_ind=None):
@@ -45,6 +76,8 @@ def infer(prompt, model, tokenizer, component_sentences, logging_ind=None):
                                                     model_input=prompt,
                                                     component_sentences=component_sentences)
 
+        logging.info(f"token level is {token}")
+
         word = explain_result.primary_attributions(attr_method='integrated_gradients', style="detailed",
                                                 display_level="word",
                                                 decode_method="greedy",
@@ -52,6 +85,7 @@ def infer(prompt, model, tokenizer, component_sentences, logging_ind=None):
                                                 scores=outputs.scores,
                                                 model_input=prompt,
                                                 component_sentences=component_sentences)
+        logging.info(f"word level is {word}")
 
         component = explain_result.primary_attributions(attr_method='integrated_gradients', style="detailed",
                                                         display_level="component",
@@ -59,7 +93,15 @@ def infer(prompt, model, tokenizer, component_sentences, logging_ind=None):
                                                         generated_list=[],
                                                         scores=outputs.scores,
                                                         model_input=prompt,
-                                                        component_sentences=component_sentences)
+                                                      component_sentences=component_sentences)
+        logging.info(f"component level is {component}")
+
+        perturbation_level = perturbation(model,tokenizer,prompt,real_output)
+
+
+
+
+
         if logging_ind:
             logging.info(f"Inference completed for the index: {logging_ind}")
         torch.cuda.empty_cache()
