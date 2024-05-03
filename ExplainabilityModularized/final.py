@@ -4,7 +4,7 @@ import time
 
 start_time = time.time()  # note at start of script
 
-# %% Environment Setup
+# %% Environmentf Setup
 from utils import setup_bmc5_env, setup_logging_results
 
 setup_bmc5_env()

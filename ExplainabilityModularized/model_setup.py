@@ -4,7 +4,7 @@ import transformers
 from torch import bfloat16
 from transformers import LlamaTokenizer, LlamaForCausalLM, AutoModelForCausalLM,AutoTokenizer
 import re
-def setup_model_tokenizer(is_quantized=False, model_name=None):
+def setup_model_tokenizer(is_quantized=True, model_name=None):
     if model_name is None:
         model_name = os.environ.get("MODEL_NAME")
     
