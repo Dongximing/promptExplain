@@ -45,7 +45,7 @@ def setup_bmc5_env():
     sys.path.append(
         "/home/s4user/PromptExplainabilityProject/LanguageModelRepo")  # Adding wherever Ximings language model is
 
-    os.environ['MODEL_NAME'] = 'meta/llama-2-7b-chat-hf'
+    os.environ['MODEL_NAME'] = 'meta-llama/Llama-2-7b-chat-hf'
 
     # TODO: uncomment
     # os.environ['CUDA_CORE'] = "cuda:0" # update whichever wanna use
