@@ -18,7 +18,7 @@ def setup_model_tokenizer(is_quantized=True, model_name=None):
                 bnb_4bit_compute_dtype=bfloat16
             )
             model = LlamaForCausalLM.from_pretrained(model_name, output_hidden_states=True,
-                                                    quantization_config=bnb_config, device_map=os.environ.get('CUDA_CORE'))
+                                                     device_map=os.environ.get('CUDA_CORE'),torch_dtype = torch.float16)
 
         else:
             model = LlamaForCausalLM.from_pretrained(model_name, output_hidden_states=True,
