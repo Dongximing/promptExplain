@@ -4,7 +4,7 @@ import traceback
 
 import pandas as pd
 import torch
-from ExplainabilityModularized.languageModel import LanguageModelExplation
+from languageModel import LanguageModelExplation
 import numpy as np
 
 from captum.attr import (
