@@ -2,7 +2,7 @@ import os
 import torch
 import transformers
 from torch import bfloat16
-from transformers import LlamaTokenizer, LlamaForCausalLM AutoModelForCausalLM,AutoTokenizer
+from transformers import LlamaTokenizer, LlamaForCausalLM, AutoModelForCausalLM,AutoTokenizer
 
 
 def setup_model_tokenizer(is_quantized=False, model_name=None):
