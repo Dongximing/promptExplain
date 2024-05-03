@@ -26,6 +26,7 @@ def perturbation(model,tokenizer,prompt,real_output):
     real_attr_value = np.absolute(attr_value)
     input_tokens = attr_res.input_tokens
     real_attr_value_per_token = np.sum(real_attr_value, axis=0)
+    return  input_tokens,real_attr_value_per_token
 
 
 
@@ -92,8 +93,9 @@ def infer(prompt, model, tokenizer, component_sentences, logging_ind=None):
                                                       component_sentences=component_sentences)
         logging.info(f"component level is {component}")
 
-        perturbation_level = perturbation(model,tokenizer,prompt,real_output)
+        perturbation_level_tokens , perturbation_level = perturbation(model,tokenizer,prompt,real_output)
 
+        logging.info(f"perturbation_level_tokens  is {perturbation_level_tokens}")
         logging.info(f"perturbation_level is {perturbation_level}")
 
 
