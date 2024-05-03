@@ -22,7 +22,7 @@ def setup_model_tokenizer(is_quantized=False, model_name=None):
 
         else:
             model = LlamaForCausalLM.from_pretrained(model_name, output_hidden_states=True,
-                                                    device_map="auto")
+                                                    device_map="auto").half()
 
         tokenizer = LlamaTokenizer.from_pretrained(model_name, add_special_tokens=False,
                                                 add_bos_token=False)
