@@ -48,7 +48,7 @@ logging.info("Postprocessing completed")
 # %% Running peturbation
 from peturbation import run_peturbation
 
-peturbed_df, model = run_peturbation(postprocessed_df.copy())
+peturbed_df, model = run_peturbation(postprocessed_df.copy(),model)
 peturbed_df.to_pickle(f'{results_path}peturbed_df.pkl')
 logging.info("Perturbation process completed")
 

@@ -118,7 +118,7 @@ def calculate_component(component_sentences,word_scores):
 
 
 
-def infer(prompt, model, tokenizer, component_sentences, logging_ind=None):
+def infer(prompt, model, tokenizer, component_sentences, is_perturbation,logging_ind=None,):
 
     # skips the instance if GPU memory exceeds.
 
@@ -138,57 +138,61 @@ def infer(prompt, model, tokenizer, component_sentences, logging_ind=None):
         real_output = tokenizer.batch_decode(outputs[0][:, original_prompt:].detach().cpu().numpy(),
                                             skip_special_tokens=True)
 
-        explain = LanguageModelExplation(model=model, tokenizer=tokenizer,
-                                        model_name=os.environ.get("MODEL_NAME"),
-                                        config=None,
-                                        collect_activations_flag=False,
-                                        collect_activations_layer_nums=None,  # None --> collect for all layers
-                                        verbose=False,
-                                        gpu=True)
-        explain_result = explain.analysis(input_id=input_ids, output=outputs, attention_mask=attention_mask,
-                                        attribution=['integrated_gradients'])
+        if not is_perturbation:
 
-        token = explain_result.primary_attributions(attr_method='integrated_gradients', style="detailed",
-                                                    display_level="char",
+
+            explain = LanguageModelExplation(model=model, tokenizer=tokenizer,
+                                            model_name=os.environ.get("MODEL_NAME"),
+                                            config=None,
+                                            collect_activations_flag=False,
+                                            collect_activations_layer_nums=None,  # None --> collect for all layers
+                                            verbose=False,
+                                            gpu=True)
+            explain_result = explain.analysis(input_id=input_ids, output=outputs, attention_mask=attention_mask,
+                                            attribution=['integrated_gradients'])
+
+            token = explain_result.primary_attributions(attr_method='integrated_gradients', style="detailed",
+                                                        display_level="char",
+                                                        decode_method="greedy",
+                                                        generated_list=[],
+                                                        scores=outputs.scores,
+                                                        model_input=prompt,
+                                                        component_sentences=component_sentences)
+
+            # logging.info(f"token level is {token}")
+
+            word = explain_result.primary_attributions(attr_method='integrated_gradients', style="detailed",
+                                                    display_level="word",
                                                     decode_method="greedy",
                                                     generated_list=[],
                                                     scores=outputs.scores,
                                                     model_input=prompt,
                                                     component_sentences=component_sentences)
 
-        # logging.info(f"token level is {token}")
+            # logging.info("\n")
+            # logging.info(f"word level is {word}")
 
-        word = explain_result.primary_attributions(attr_method='integrated_gradients', style="detailed",
-                                                display_level="word",
-                                                decode_method="greedy",
-                                                generated_list=[],
-                                                scores=outputs.scores,
-                                                model_input=prompt,
-                                                component_sentences=component_sentences)
+            component = explain_result.primary_attributions(attr_method='integrated_gradients', style="detailed",
+                                                            display_level="component",
+                                                            decode_method="greedy",
+                                                            generated_list=[],
+                                                            scores=outputs.scores,
+                                                            model_input=prompt,
+                                                          component_sentences=component_sentences)
 
-        # logging.info("\n")
-        # logging.info(f"word level is {word}")
+        else:
+            logging.info("--------------------------perturbation-------------------------------")
 
-        component = explain_result.primary_attributions(attr_method='integrated_gradients', style="detailed",
-                                                        display_level="component",
-                                                        decode_method="greedy",
-                                                        generated_list=[],
-                                                        scores=outputs.scores,
-                                                        model_input=prompt,
-                                                      component_sentences=component_sentences)
-        logging.info(f"component level is {component}")
-        logging.info("--------------------------new method-------------------------------")
-
-        perturbation_result = perturbation(model,tokenizer,prompt,real_output)
-        word_perturbation_result = calculate_word_scores(prompt,perturbation_result)
-        word_perturbation = word_perturbation_result.get('tokens')
-        component_level_perturbation = calculate_component(component_sentences,word_perturbation)
-        # logging.info("\n")
-        # logging.info(f"token level perturbation_result is {perturbation_result}")
-        # logging.info("\n")
-        # logging.info(f"word level perturbation_result is {word_perturbation_result}")
-        logging.info("\n")
-        logging.info(f"component level perturbation_result is {component_level_perturbation}")
+            perturbation_result = perturbation(model,tokenizer,prompt,real_output)
+            word_perturbation_result = calculate_word_scores(prompt,perturbation_result)
+            word_perturbation = word_perturbation_result.get('tokens')
+            component_level_perturbation = calculate_component(component_sentences,word_perturbation)
+            # logging.info("\n")
+            # logging.info(f"token level perturbation_result is {perturbation_result}")
+            # logging.info("\n")
+            # logging.info(f"word level perturbation_result is {word_perturbation_result}")
+            # logging.info("\n")
+            # logging.info(f"component level perturbation_result is {component_level_perturbation}")
 
 
         # logging.info(f"perturbation_level_tokens  is {perturbation_level_tokens}")
@@ -202,7 +206,12 @@ def infer(prompt, model, tokenizer, component_sentences, logging_ind=None):
             logging.info(f"Inference completed for the index: {logging_ind}")
         torch.cuda.empty_cache()
 
-        return token, word, component, real_output
+        if is_perturbation:
+
+            return perturbation_result, word_perturbation_result, component_level_perturbation, real_output
+        else:
+
+            return token, word, component, real_output
     
     except:
         logging.error(traceback.format_exc())
@@ -211,6 +220,7 @@ def infer(prompt, model, tokenizer, component_sentences, logging_ind=None):
 
 def run_initial_inference(df, model, tokenizer):
     logging.info(f"Inferencing Initial samples -------------------------")
+    is_perturbation = True
 
     data = []
     for ind, example in enumerate(df.select(range(len(df)))):
@@ -218,6 +228,7 @@ def run_initial_inference(df, model, tokenizer):
                                                     model,
                                                     tokenizer,
                                                     example['component_range'],
+                                                    is_perturbation,
                                                     logging_ind=ind)
         
         if token is not None:
