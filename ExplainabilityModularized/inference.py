@@ -35,6 +35,7 @@ def perturbation(model,tokenizer,prompt,real_output):
                             'value': str(real_attr_value_per_token[idx]),
                             'position': idx
                             })
+    logging.info(f"tokens_list--------------------->{tokens_list}")
     return  input_tokens,real_attr_value_per_token
 
 
