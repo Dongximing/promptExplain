@@ -16,7 +16,7 @@ from captum.attr import (
 )
 
 
-def calculate_word_scores(self, model_input, data):
+def calculate_word_scores( model_input, data):
     """
     Calculate scores for each word in the input sentence.
 
@@ -77,8 +77,11 @@ def perturbation(model,tokenizer,prompt,real_output):
                             'value': str(newer_sum_normalized_array[idx]),
                             'position': idx
                             })
-    logging.info(f"tokens_list--------------------->{tokens_list}")
-    return  input_tokens,real_attr_value_per_token
+    #logging.info(f"tokens_list--------------------->{tokens_list}")
+    return {
+        'tokens': tokens_list,
+    }
+
 
 
 
@@ -134,6 +137,8 @@ def infer(prompt, model, tokenizer, component_sentences, logging_ind=None):
                                                 scores=outputs.scores,
                                                 model_input=prompt,
                                                 component_sentences=component_sentences)
+
+        logging.info("\n")
         logging.info(f"word level is {word}")
 
         component = explain_result.primary_attributions(attr_method='integrated_gradients', style="detailed",
@@ -143,9 +148,17 @@ def infer(prompt, model, tokenizer, component_sentences, logging_ind=None):
                                                         scores=outputs.scores,
                                                         model_input=prompt,
                                                       component_sentences=component_sentences)
-        logging.info(f"component level is {component}")
+        #logging.info(f"component level is {component}")
+        logging.info("--------------------------new method-------------------------------")
 
-        perturbation_level_tokens , perturbation_level = perturbation(model,tokenizer,prompt,real_output)
+        perturbation_result = perturbation(model,tokenizer,prompt,real_output)
+        word_perturbation_result = calculate_word_scores(prompt,perturbation_result)
+        logging.info("\n")
+        logging.info(f"token level perturbation_result is {perturbation_result}")
+
+        logging.info(f"word level perturbation_result is {word_perturbation_result}")
+
+
 
         # logging.info(f"perturbation_level_tokens  is {perturbation_level_tokens}")
         # logging.info(f"perturbation_level is {perturbation_level}")
