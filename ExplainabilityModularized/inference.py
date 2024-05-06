@@ -103,7 +103,7 @@ def calculate_component_scores(scored_tokens, component_positions_dict):
             float(position_value_map.get(position, {}).get('value', 0)) for position in positions)
 
     return combined_scores_by_component, combined_scores_by_word, components_tokens_dict
-def component(component_sentences,word_scores):
+def calculate_component(component_sentences,word_scores):
     component_positions_dict =component_sentences
 
     combined_scores_by_component, combined_scores_by_word, components_tokens_dict = calculate_component_scores(
@@ -182,7 +182,7 @@ def infer(prompt, model, tokenizer, component_sentences, logging_ind=None):
         perturbation_result = perturbation(model,tokenizer,prompt,real_output)
         word_perturbation_result = calculate_word_scores(prompt,perturbation_result)
         word_perturbation = word_perturbation_result.get('tokens')
-        component_level_perturbation = component(component_sentences,word_perturbation)
+        component_level_perturbation = calculate_component(component_sentences,word_perturbation)
         # logging.info("\n")
         # logging.info(f"token level perturbation_result is {perturbation_result}")
         # logging.info("\n")
