@@ -6,12 +6,53 @@ import pandas as pd
 import torch
 from languageModel import LanguageModelExplation
 import numpy as np
+
 from util import strip_tokenizer_prefix
+from nltk.tokenize import word_tokenize
 from captum.attr import (
     FeatureAblation,
     LLMAttribution,
     TextTokenInput,
 )
+
+
+def calculate_word_scores(self, model_input, data):
+    """
+    Calculate scores for each word in the input sentence.
+
+    Parameters:
+    - model_input: A string containing the sentence to be processed.
+    - data: A dictionary with a 'tokens' key, containing the contributions data.
+
+    Returns:
+    - A list of dictionaries with scored tokens.
+    """
+    words = word_tokenize(model_input)
+    contributions = data.get('tokens')
+    index = 0
+    total_value = 0
+    real_token = ''
+    combined_contributions = []
+
+    for id, word in enumerate(words, start=0):
+        while index < len(contributions):
+            token = contributions[index].get('token')
+            total_value += float(contributions[index].get('value'))
+            real_token += token
+            index += 1
+
+            if len(real_token) == len(word):
+                combined_contributions.append({
+                    'token': real_token,
+                    'type': 'input',
+                    'value': total_value,
+                    'position': id
+                })
+                total_value = 0
+                real_token = ''
+                break
+
+    return combined_contributions
 def perturbation(model,tokenizer,prompt,real_output):
     fa = FeatureAblation(model)
     llm_attr = LLMAttribution(fa, tokenizer)
