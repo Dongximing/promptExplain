@@ -266,6 +266,7 @@ def run_peturbed_inference(df, model, tokenizer, results_path, column_names=None
     for col_name in column_names:
         results = df.apply(lambda row: infer(row[col_name], model, tokenizer,
                                              component_sentences=row['component_range'],
+                                             is_perturbation = True,
                                              logging_ind=f"{row.name=},{col_name=}")
                                              , axis=1)
         df[f'{col_name}_token_level'], \
