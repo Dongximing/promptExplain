@@ -6,7 +6,7 @@ import pandas as pd
 import torch
 from languageModel import LanguageModelExplation
 import numpy as np
-
+from util import strip_tokenizer_prefix
 from captum.attr import (
     FeatureAblation,
     LLMAttribution,
@@ -26,6 +26,15 @@ def perturbation(model,tokenizer,prompt,real_output):
     real_attr_value = np.absolute(attr_value)
     input_tokens = attr_res.input_tokens
     real_attr_value_per_token = np.sum(real_attr_value, axis=0)
+    tokens_list = []
+    for idx, token in enumerate(input_tokens):
+        _clean_token = strip_tokenizer_prefix(tokenizer.decode(token))
+        #_type = 'output' if idx in generated_list else 'input'
+        tokens_list.append({'token': _clean_token,
+                            'type': 'input',
+                            'value': str(real_attr_value_per_token[idx]),
+                            'position': idx
+                            })
     return  input_tokens,real_attr_value_per_token
 
 
