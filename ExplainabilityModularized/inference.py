@@ -26,13 +26,14 @@ def perturbation(model,tokenizer,prompt,real_output):
     real_attr_value = np.absolute(attr_value)
     input_tokens = attr_res.input_tokens
     real_attr_value_per_token = np.sum(real_attr_value, axis=0)
+    newer_sum_normalized_array = real_attr_value_per_token / np.sum(real_attr_value_per_token)
     tokens_list = []
     for idx, token in enumerate(input_tokens):
         _clean_token = strip_tokenizer_prefix(token)
         #_type = 'output' if idx in generated_list else 'input'
         tokens_list.append({'token': _clean_token,
                             'type': 'input',
-                            'value': str(real_attr_value_per_token[idx]),
+                            'value': str(newer_sum_normalized_array[idx]),
                             'position': idx
                             })
     logging.info(f"tokens_list--------------------->{tokens_list}")
