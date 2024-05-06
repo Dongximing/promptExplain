@@ -56,7 +56,7 @@ logging.info("Perturbation process completed")
 
 from postprocessing import do_peturbed_reconstruct
 
-reconstructed_df = do_peturbed_reconstruct(peturbed_df.copy(),model)
+reconstructed_df = do_peturbed_reconstruct(peturbed_df.copy(),None)
 reconstructed_df.to_pickle(f'{results_path}reconstructed_df.pkl')
 logging.info("Reconstruction process completed")
 
