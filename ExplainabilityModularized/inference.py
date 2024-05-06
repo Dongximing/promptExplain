@@ -181,7 +181,7 @@ def infer(prompt, model, tokenizer, component_sentences, logging_ind=None):
 
         perturbation_result = perturbation(model,tokenizer,prompt,real_output)
         word_perturbation_result = calculate_word_scores(prompt,perturbation_result)
-        component_level_perturbation = component(component_sentences,word_perturbation_result)
+        component_level_perturbation = component(component_sentences,word_perturbation_result.get('tokens'))
         # logging.info("\n")
         # logging.info(f"token level perturbation_result is {perturbation_result}")
         # logging.info("\n")
