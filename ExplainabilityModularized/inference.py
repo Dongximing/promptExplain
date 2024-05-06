@@ -52,7 +52,7 @@ def calculate_word_scores( model_input, data):
                 real_token = ''
                 break
 
-    return combined_contributions
+    return {'tokens': combined_contributions}
 def perturbation(model,tokenizer,prompt,real_output):
     fa = FeatureAblation(model)
     llm_attr = LLMAttribution(fa, tokenizer)
@@ -83,9 +83,37 @@ def perturbation(model,tokenizer,prompt,real_output):
     }
 
 
+def calculate_component_scores(scored_tokens, component_positions_dict):
+    # Convert token positions to a dictionary for faster lookup
+    position_value_map = {token['position']: token for token in scored_tokens}
 
+    # Initialize dictionaries for token and score storage
+    components_tokens_dict = {}
+    combined_scores_by_component = {}
+    combined_scores_by_word = {}
 
+    # Compute scores and tokens for each component
+    for component, positions in component_positions_dict.items():
+        component_tokens = [position_value_map.get(position) for position in positions if
+                            position in position_value_map]
+        components_tokens_dict[component] = component_tokens
+        combined_scores_by_component[component] = sum(
+            float(token['value']) for token in component_tokens if token is not None)
+        combined_scores_by_word[component] = sum(
+            float(position_value_map.get(position, {}).get('value', 0)) for position in positions)
 
+    return combined_scores_by_component, combined_scores_by_word, components_tokens_dict
+def component(component_sentences,word_scores):
+    component_positions_dict =component_sentences
+
+    combined_scores_by_component, combined_scores_by_word, components_tokens_dict = calculate_component_scores(
+    word_scores,
+    component_positions_dict)
+
+    return_data = {'combined_scores_by_component': combined_scores_by_component,
+               'combined_scores_by_word': combined_scores_by_word,
+               'component_tokens_dict': components_tokens_dict}
+    return return_data
 
 
 
@@ -128,7 +156,7 @@ def infer(prompt, model, tokenizer, component_sentences, logging_ind=None):
                                                     model_input=prompt,
                                                     component_sentences=component_sentences)
 
-        logging.info(f"token level is {token}")
+        # logging.info(f"token level is {token}")
 
         word = explain_result.primary_attributions(attr_method='integrated_gradients', style="detailed",
                                                 display_level="word",
@@ -138,8 +166,8 @@ def infer(prompt, model, tokenizer, component_sentences, logging_ind=None):
                                                 model_input=prompt,
                                                 component_sentences=component_sentences)
 
-        logging.info("\n")
-        logging.info(f"word level is {word}")
+        # logging.info("\n")
+        # logging.info(f"word level is {word}")
 
         component = explain_result.primary_attributions(attr_method='integrated_gradients', style="detailed",
                                                         display_level="component",
@@ -148,16 +176,18 @@ def infer(prompt, model, tokenizer, component_sentences, logging_ind=None):
                                                         scores=outputs.scores,
                                                         model_input=prompt,
                                                       component_sentences=component_sentences)
-        #logging.info(f"component level is {component}")
+        logging.info(f"component level is {component}")
         logging.info("--------------------------new method-------------------------------")
 
         perturbation_result = perturbation(model,tokenizer,prompt,real_output)
         word_perturbation_result = calculate_word_scores(prompt,perturbation_result)
+        component_level_perturbation = component(component_sentences,word_perturbation_result)
+        # logging.info("\n")
+        # logging.info(f"token level perturbation_result is {perturbation_result}")
+        # logging.info("\n")
+        # logging.info(f"word level perturbation_result is {word_perturbation_result}")
         logging.info("\n")
-        logging.info(f"token level perturbation_result is {perturbation_result}")
-
-        logging.info(f"word level perturbation_result is {word_perturbation_result}")
-
+        logging.info(f"component level perturbation_result is {component_level_perturbation}")
 
 
         # logging.info(f"perturbation_level_tokens  is {perturbation_level_tokens}")
