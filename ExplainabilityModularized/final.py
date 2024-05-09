@@ -68,5 +68,5 @@ peturbed_inferenced_df.to_pickle(f'{results_path}peturbed_inferenced_df.pkl')
 logging.info("Inference on petrubed data completed")
 
 # %% save the final execution time!
-execution_minutes = round((start_time - time.time()) / 60, 2)
+execution_minutes = round((time.time()-start_time) / 60, 2)
 logging.info(f"Time taken to execute the entire script, {execution_minutes=}.")
