@@ -11,7 +11,7 @@ setup_bmc5_env()
 
 # PARAMS SPECIFIC TO  THE CURRENT RUN
 os.environ['CUDA_CORE'] = "cuda:0"  # NOTE: belongs to setup func above, but keep here for running diff scripts.
-dataset_range = range(101, 120)
+dataset_range = range(101, 105)
 
 results_path = setup_logging_results(dataset_range)
 logging.info(f"Script started")
