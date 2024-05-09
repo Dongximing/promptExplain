@@ -138,6 +138,8 @@ def infer(prompt, model, tokenizer, component_sentences, is_perturbation,logging
         real_output = tokenizer.batch_decode(outputs[0][:, original_prompt:].detach().cpu().numpy(),
                                             skip_special_tokens=True)
 
+        torch.cuda.max_memory_allocated()
+
         if not is_perturbation:
 
 
@@ -187,6 +189,8 @@ def infer(prompt, model, tokenizer, component_sentences, is_perturbation,logging
             word_perturbation_result = calculate_word_scores(prompt,perturbation_result)
             word_perturbation = word_perturbation_result.get('tokens')
             component_level_perturbation = calculate_component(component_sentences,word_perturbation)
+            max_memory_used = torch.cuda.max_memory_allocated() / 1024 ** 2  # Convert to MB
+            logging.info(f"Maximum GPU memory used during this batch: {max_memory_used:.2f} MB")
             # logging.info("\n")
             # logging.info(f"token level perturbation_result is {perturbation_result}")
             # logging.info("\n")
