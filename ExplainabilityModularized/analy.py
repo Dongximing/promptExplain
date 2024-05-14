@@ -30,7 +30,7 @@ class DeepInfraChat(BaseRunner):
             ssl_context.check_hostname = False
             ssl_context.verify_mode = ssl.CERT_NONE
             async with session.post(
-                url="http://localhost:8082",
+                url="https://localhost:8082",
                 json=request,
                 headers={"Content-Type": "application/json"},
                 ssl=ssl_context
