@@ -39,10 +39,11 @@ class DeepInfraChat(BaseRunner):
                     print("Error 422: Unprocessable Entity. Check data format and required fields.")
                     text = await response.text()
                     print("Response from server:", text)
-                response.raise_for_status()
+
                 return await response.json()
 
     def _to_llm_result(self, request: dict, json_data: dict, fingerprint: str | bytes):
+        print("json_data------->\n",json_data)
         return LLMResult(
             json_data["results"][0]["generated_text"],
             costs=Costs(json_data["num_input_tokens"], json_data["num_tokens"]),
