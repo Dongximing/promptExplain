@@ -35,6 +35,10 @@ class DeepInfraChat(BaseRunner):
                 headers={"Content-Type": "application/json"},
                 ssl=ssl_context
             ) as response:
+                if response.status == 422:
+                    print("Error 422: Unprocessable Entity. Check data format and required fields.")
+                    text = await response.text()
+                    print("Response from server:", text)
                 response.raise_for_status()
                 return await response.json()
 
