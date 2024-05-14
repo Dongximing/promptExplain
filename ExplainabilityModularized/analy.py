@@ -18,8 +18,6 @@ class DeepInfraChat(BaseRunner):
         formatted_prompt = f"{prompt}"
         request = dict(
             inputs=formatted_prompt,
-            max_new_tokens=self._max_context_window or max_tokens,
-            temperature=randomness,
         )
         fingerprint = serialize_json({"seed": seed, "generative_model_id": self._model_id, **request})
         return await self._execute_request(request, fingerprint, priority)
@@ -51,4 +49,4 @@ class DeepInfraChat(BaseRunner):
 runner = DeepInfraChat(
     "meta-llama/Llama-2-7b-hf", api_config={"api_key": ""}
 )
-print(Output(GenerateText("Generate a 50 word essay about horses.")).run(runner))
+print(Output(GenerateText("What is the capital of China? the answer is")).run(runner))
