@@ -17,7 +17,7 @@ class DeepInfraChat(BaseRunner):
     ) -> LLMResult:
         formatted_prompt = f"[INST] {prompt} [/INST]"
         request = dict(
-            input=formatted_prompt,
+            inputs=formatted_prompt,
             max_new_tokens=self._max_context_window or max_tokens,
             temperature=randomness,
         )
@@ -33,7 +33,7 @@ class DeepInfraChat(BaseRunner):
                 url="http://localhost:8082",
                 json=request,
                 headers={"Authorization":""},
-                ssl=ssl_context
+
             ) as response:
                 if response.status == 422:
                     print("Error 422: Unprocessable Entity. Check data format and required fields.")
