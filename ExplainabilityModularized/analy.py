@@ -15,7 +15,7 @@ class DeepInfraChat(BaseRunner):
         priority: int = 0,
         **kwargs,
     ) -> LLMResult:
-        formatted_prompt = f"[INST] {prompt} [/INST]"
+        formatted_prompt = f"{prompt}"
         request = dict(
             inputs=formatted_prompt,
             max_new_tokens=self._max_context_window or max_tokens,
