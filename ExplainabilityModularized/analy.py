@@ -32,7 +32,7 @@ class DeepInfraChat(BaseRunner):
             async with session.post(
                 url="http://localhost:8082",
                 json=request,
-                headers={"Content-Type": "application/json"},
+                headers={"Authorization":""},
                 ssl=ssl_context
             ) as response:
                 if response.status == 422:
